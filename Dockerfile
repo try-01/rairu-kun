@@ -37,7 +37,8 @@ RUN echo "#!/bin/bash" > /startup.sh && \
     echo "sleep 10" >> /startup.sh && \
     echo "echo '========================================='" >> /startup.sh && \
     echo "echo 'VNC Desktop Access:'" >> /startup.sh && \
-    echo "curl -s http://localhost:4040/api/tunnels | python3 -c \"import sys, json; data=json.load(sys.stdin); tunnels=data['tunnels']; print('Address: ' + tunnels[0]['public_url'][6:] + '\nPassword: ' + '$VNC_PASSWORD')\" || echo 'Failed to get tunnel info'" >> /startup.sh && \
+    # Perbaikan kritis pada script Python
+    echo "curl -s http://localhost:4040/api/tunnels | python3 -c \"import sys, json; data=json.load(sys.stdin); tunnel=data['tunnels'][0]['public_url'].replace('tcp://', ''); print('Address: ' + tunnel); print('Password: ' + '$VNC_PASSWORD')\" || echo 'Failed to get tunnel info'" >> /startup.sh && \
     echo "echo '========================================='" >> /startup.sh && \
     echo "echo 'Untuk SSH: Buka terminal di desktop VNC'" >> /startup.sh && \
     echo "tail -f /dev/null" >> /startup.sh && \
