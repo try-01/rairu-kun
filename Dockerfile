@@ -5,22 +5,21 @@ ARG REGION=ap
 ENV DEBIAN_FRONTEND=noninteractive \
     VNC_PASSWORD=craxid
 
-# Install dependencies + XFCE desktop + VNC
+# Install dependencies + SSL libraries
 RUN apt update && apt upgrade -y && \
     apt install -y --no-install-recommends \
+    ca-certificates openssl \
     xfce4 xfce4-goodies \
     tigervnc-standalone-server \
     firefox-esr \
-    xfce4-terminal \
-    gedit \
-    thunar \
     wget unzip curl python3 \
     openssh-server
 
-# Install ngrok
-RUN wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip -O /ngrok.zip \
-    && unzip /ngrok.zip -d / \
-    && chmod +x /ngrok
+# Install ngrok dengan metode alternatif
+RUN curl -k -L https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -o /ngrok.tgz \
+    && tar xvzf /ngrok.tgz -C / \
+    && chmod +x /ngrok \
+    && rm /ngrok.tgz
 
 # Setup VNC password
 RUN mkdir -p /root/.vnc
