@@ -5,14 +5,20 @@ ARG REGION=ap
 ENV DEBIAN_FRONTEND=noninteractive \
     VNC_PASSWORD=craxid
 
-# Install dependencies
+# Install dependencies termasuk DBus
 RUN apt update && apt upgrade -y && \
     apt install -y --no-install-recommends \
     xfce4 xfce4-goodies \
     tigervnc-standalone-server \
     firefox-esr \
     wget unzip curl python3 \
-    openssh-server
+    openssh-server \
+    dbus-x11 \  # Paket penting untuk DBus
+    xfce4-settings \  # Untuk pengaturan desktop
+    xfce4-panel \  # Panel XFCE
+    xfce4-session \  # Session manager
+    xfdesktop4 \  # Desktop manager
+    xinit  # Untuk inisialisasi X
 
 # Install ngrok
 RUN curl -k -L https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -o /ngrok.tgz \
@@ -20,13 +26,16 @@ RUN curl -k -L https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.
     && chmod +x /ngrok \
     && rm /ngrok.tgz
 
+# Setup DBus
+RUN dbus-uuidgen > /var/lib/dbus/machine-id
+
 # Setup VNC
 RUN mkdir -p /root/.vnc && \
     echo "$VNC_PASSWORD" | vncpasswd -f > /root/.vnc/passwd && \
     chmod 600 /root/.vnc/passwd
 
-# Create VNC startup script
-RUN echo "#!/bin/sh\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nexec startxfce4" > /root/.vnc/xstartup && \
+# Create VNC startup script yang diperbaiki
+RUN echo "#!/bin/sh\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nexec dbus-launch startxfce4" > /root/.vnc/xstartup && \
     chmod +x /root/.vnc/xstartup
 
 # Main startup script
@@ -37,7 +46,6 @@ RUN echo "#!/bin/bash" > /startup.sh && \
     echo "sleep 10" >> /startup.sh && \
     echo "echo '========================================='" >> /startup.sh && \
     echo "echo 'VNC Desktop Access:'" >> /startup.sh && \
-    # Perbaikan kritis pada script Python
     echo "curl -s http://localhost:4040/api/tunnels | python3 -c \"import sys, json; data=json.load(sys.stdin); tunnel=data['tunnels'][0]['public_url'].replace('tcp://', ''); print('Address: ' + tunnel); print('Password: ' + '$VNC_PASSWORD')\" || echo 'Failed to get tunnel info'" >> /startup.sh && \
     echo "echo '========================================='" >> /startup.sh && \
     echo "echo 'Untuk SSH: Buka terminal di desktop VNC'" >> /startup.sh && \
