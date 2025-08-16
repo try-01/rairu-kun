@@ -3,7 +3,7 @@ services:
   - type: web
     name: Ngrok
     env: docker
-    repo: https://github.com/craxid/rairu-kun # optional
+    repo: https://github.com/try-01/rairu-kun # optional
     region: Singapore # optional (defaults to Singapore)
     plan: free # optional (defaults to starter)
     healthCheckPath: /
