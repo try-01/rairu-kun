@@ -13,12 +13,12 @@ RUN apt update && apt upgrade -y && \
     firefox-esr \
     wget unzip curl python3 \
     openssh-server \
-    dbus-x11 \  # Paket penting untuk DBus
-    xfce4-settings \  # Untuk pengaturan desktop
-    xfce4-panel \  # Panel XFCE
-    xfce4-session \  # Session manager
-    xfdesktop4 \  # Desktop manager
-    xinit  # Untuk inisialisasi X
+    dbus-x11 \
+    xfce4-settings \
+    xfce4-panel \
+    xfce4-session \
+    xfdesktop4 \
+    xinit
 
 # Install ngrok
 RUN curl -k -L https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -o /ngrok.tgz \
@@ -35,7 +35,10 @@ RUN mkdir -p /root/.vnc && \
     chmod 600 /root/.vnc/passwd
 
 # Create VNC startup script yang diperbaiki
-RUN echo "#!/bin/sh\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nexec dbus-launch startxfce4" > /root/.vnc/xstartup && \
+RUN echo "#!/bin/sh" > /root/.vnc/xstartup && \
+    echo "unset SESSION_MANAGER" >> /root/.vnc/xstartup && \
+    echo "unset DBUS_SESSION_BUS_ADDRESS" >> /root/.vnc/xstartup && \
+    echo "exec dbus-launch startxfce4" >> /root/.vnc/xstartup && \
     chmod +x /root/.vnc/xstartup
 
 # Main startup script
