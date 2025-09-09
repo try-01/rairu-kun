@@ -12,7 +12,6 @@ RUN apt update && apt upgrade -y && \
     apt install -y --no-install-recommends \
     xfce4 xfce4-goodies \
     tigervnc-standalone-server \
-    firefox-esr \
     wget unzip curl python3 \
     openssh-server \
     dbus-x11 \
