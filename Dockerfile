@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM ubuntu:22.04
 
 ARG NGROK_TOKEN
 ARG REGION=ap
